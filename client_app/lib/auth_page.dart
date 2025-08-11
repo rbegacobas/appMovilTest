@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'home_page.dart';
+import 'worker_home_page.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({Key? key}) : super(key: key);
@@ -22,15 +23,31 @@ class _AuthPageState extends State<AuthPage> {
     setState(() { _loading = true; _error = null; });
     try {
       if (_isLogin) {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
+        final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
-        // Navegar a HomePage tras login
-        if (mounted) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const HomePage()),
-          );
+        // Validar rol en Firestore
+        final doc = await FirebaseFirestore.instance.collection('usuarios').doc(userCredential.user!.uid).get();
+        final data = doc.data();
+        if (data != null && data['rol'] == 'trabajador') {
+          if (mounted) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const WorkerHomePage()),
+            );
+          }
+        } else if (data != null && data['rol'] == 'cliente') {
+          if (mounted) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const HomePage()),
+            );
+          }
+        } else {
+          // Si no tiene rol válido, mostrar error y cerrar sesión
+          await FirebaseAuth.instance.signOut();
+          setState(() {
+            _error = 'No tienes permisos para acceder.';
+          });
         }
       } else {
         final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
