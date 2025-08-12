@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'home_page.dart';
 import 'worker_home_page.dart';
+import 'admin_home_page.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({Key? key}) : super(key: key);
@@ -40,6 +41,12 @@ class _AuthPageState extends State<AuthPage> {
           if (mounted) {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (_) => const HomePage()),
+            );
+          }
+        } else if (data != null && data['rol'] == 'admin') {
+          if (mounted) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const AdminHomePage()),
             );
           }
         } else {
