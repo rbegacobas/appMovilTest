@@ -1,35 +1,46 @@
-# scripts/update_users.js
+update_users.js - migración para la colección `usuarios`
+=====================================================
 
-This folder contains a helper Node script to update the `usuarios` collection in Firestore by adding missing fields (`nombre`, `celular`) and setting `updatedAt` to server timestamp.
+Descripción
+-----------
+Script Node para agregar/normalizar campos en los documentos de la colección `usuarios`:
 
-How to run (safe):
+- `nombreCompleto` (toma `nombre` o `displayName` si existe)
+- `celular` (toma `celular` o `phone` si existe)
+- `updatedAt` (serverTimestamp)
 
-1. Install Node deps:
+Uso
+---
 
-```bash
-cd client_app/scripts
-npm init -y
-npm install firebase-admin
-```
-
-2. Provide Google service account JSON and export env var:
-
-```bash
-export GOOGLE_APPLICATION_CREDENTIALS="/path/to/serviceAccountKey.json"
-```
-
-3. Dry run (no writes):
+Modo dry-run (predeterminado, no escribe):
 
 ```bash
-DRY_RUN=1 node update_users.js
+node update_users.js --limit 5
 ```
 
-4. To apply changes (write to Firestore):
+Aplicar cambios (con credenciales configuradas):
 
 ```bash
-DRY_RUN=0 node update_users.js
+node update_users.js --apply --limit 100
 ```
 
-Notes:
-- The script uses Application Default Credentials. Make sure the service account has access to Firestore.
-- You can adapt the script to add more fields or transformations as required.
+Credenciales
+-----------
+El script usa Application Default Credentials (ADC). Dos opciones:
+
+1) Exportar una clave de servicio antes de ejecutar:
+
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS="/ruta/a/service-account.json"
+```
+
+2) Usar gcloud locally:
+
+```bash
+gcloud auth application-default login
+```
+
+Precauciones
+-----------
+- Hacer backup antes de aplicar. El dry-run muestra exactamente qué se actualizaría.
+- Testear primero con `--limit 5` para revisar los cambios.

@@ -16,6 +16,8 @@ class _AuthPageState extends State<AuthPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _celularController = TextEditingController();
   bool _isLogin = true;
   String? _error;
   bool _loading = false;
@@ -64,7 +66,10 @@ class _AuthPageState extends State<AuthPage> {
         // Guardar datos básicos en Firestore
         await FirebaseFirestore.instance.collection('usuarios').doc(userCredential.user!.uid).set({
           'email': _emailController.text.trim(),
+          'nombreCompleto': _nameController.text.trim(),
+          'celular': _celularController.text.trim(),
           'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
           'rol': 'cliente',
         });
         // Mostrar mensaje de éxito y navegar a HomePage
@@ -116,6 +121,24 @@ class _AuthPageState extends State<AuthPage> {
                   validator: (v) => v != null && v.contains('@') ? null : 'Email inválido',
                 ),
                 const SizedBox(height: 16),
+                // Nombre y celular solo para registro
+                if (!_isLogin) ...[
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: const InputDecoration(labelText: 'Nombre completo'),
+                    textCapitalization: TextCapitalization.words,
+                    validator: (v) => !_isLogin && (v == null || v.trim().isEmpty) ? 'Ingresa tu nombre' : null,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _celularController,
+                    decoration: const InputDecoration(labelText: 'Celular'),
+                    keyboardType: TextInputType.phone,
+                    validator: (v) => !_isLogin && (v == null || v.trim().isEmpty) ? 'Ingresa un celular' : null,
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
                   decoration: const InputDecoration(labelText: 'Contraseña'),
@@ -147,5 +170,14 @@ class _AuthPageState extends State<AuthPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _nameController.dispose();
+    _celularController.dispose();
+    super.dispose();
   }
 }
