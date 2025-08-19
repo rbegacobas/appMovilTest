@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'create_order_page.dart';
 
 class RecargasPage extends StatelessWidget {
   final Map<String, dynamic>? package;
@@ -21,10 +22,43 @@ class RecargasPage extends StatelessWidget {
             ],
             Expanded(
               child: ListView(
-                children: const [
-                  ListTile(title: Text('Recarga - 5 USD')),
-                  ListTile(title: Text('Recarga - 10 USD')),
-                  ListTile(title: Text('Recarga - 20 USD')),
+                children: [
+                  ListTile(
+                    title: const Text('Recarga - 5 USD'),
+                    trailing: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CreateOrderPage(serviceId: 'recargas', package: {'label':'5 USD','amount':5})));
+                      },
+                      child: const Text('Seleccionar'),
+                    ),
+                  ),
+                  ListTile(
+                    title: const Text('Recarga - 10 USD'),
+                    trailing: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CreateOrderPage(serviceId: 'recargas', package: {'label':'10 USD','amount':10})));
+                      },
+                      child: const Text('Seleccionar'),
+                    ),
+                  ),
+                  ListTile(
+                    title: const Text('Recarga - 20 USD'),
+                    trailing: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CreateOrderPage(serviceId: 'recargas', package: {'label':'20 USD','amount':20})));
+                      },
+                      child: const Text('Seleccionar'),
+                    ),
+                  ),
+                  ListTile(
+                    title: const Text('Monto personalizado'),
+                    trailing: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CreateOrderPage(serviceId: 'recargas')));
+                      },
+                      child: const Text('Ingresar'),
+                    ),
+                  ),
                 ],
               ),
             ),
